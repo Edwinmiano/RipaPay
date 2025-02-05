@@ -2,7 +2,7 @@
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/7518f486-8142-4c78-8b4e-081608a23416
+**URL**: https://ripapay.netlify.app/
 
 ## How can I edit this code?
 
@@ -10,9 +10,9 @@ There are several ways of editing your application.
 
 **Use Lovable**
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/7518f486-8142-4c78-8b4e-081608a23416) and start prompting.
+Simply visit https://ripapay.netlify.app/ and join the waitlist.
 
-Changes made via Lovable will be committed automatically to this repo.
+Successful Changes made on the codebase will be committed automatically to this repo.
 
 **Use your preferred IDE**
 
@@ -44,11 +44,7 @@ npm run dev
 
 **Use GitHub Codespaces**
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+- 
 
 ## What technologies are used for this project?
 
