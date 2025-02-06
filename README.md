@@ -1,4 +1,4 @@
-# Welcome to your Lovable project
+# Welcome to RipaPay, a NEXTGEN Payments infrustructure powered by the QUBIC Blockchain, meant to revolutionize payments in Africa and Beyond!
 
 ## Project info
 
