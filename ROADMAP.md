@@ -28,10 +28,10 @@
 ## Phase 2: Business Dashboard Core (Q2)
 - [ ] Wallet Integration 🏗️
 	- [x] Qubic wallet support ✅
-	- [ ] Basic wallet connection features 🏗️
-- [ ] Dashboard Home Implementation 🚀
-	- [ ] Key metrics display 🚀
-	- [ ] Transaction monitoring system 🚀
+	- [x] Basic wallet connection features ✅
+- [ ] Dashboard Home Implementation 🏗️
+	- [ ] Key metrics display 🏗️
+	- [ ] Transaction monitoring system 🏗️
 - [ ] Basic Payment Management 🚀
 	- [ ] QR code generation 🚀
 	- [ ] Payment link system 🚀

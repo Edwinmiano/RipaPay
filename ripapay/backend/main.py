@@ -10,6 +10,7 @@ import logging
 import asyncio
 from datetime import datetime
 from typing import Optional
+from utils.dashboard_metrics import DashboardMetricsService
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -38,6 +39,7 @@ try:
 	)
 	transaction_builder = TransactionBuilder()
 	qr_generator = QRPaymentGenerator()
+	dashboard_metrics = DashboardMetricsService(qubic_client)
 	logger.debug("Successfully initialized services")
 except Exception as e:
 	logger.error(f"Failed to initialize: {str(e)}")
@@ -155,6 +157,26 @@ async def get_wallet_transactions(request: WalletTransactionRequest):
 		}
 	except Exception as e:
 		logger.error(f"Failed to get wallet transactions: {str(e)}")
+		raise HTTPException(status_code=400, detail=str(e))
+
+@app.get("/dashboard/metrics/{business_uuid}")
+async def get_dashboard_metrics(business_uuid: str):
+	try:
+		logger.debug(f"Getting dashboard metrics for business: {business_uuid}")
+		metrics = await dashboard_metrics.get_key_metrics(business_uuid)
+		return metrics
+	except Exception as e:
+		logger.error(f"Failed to get dashboard metrics: {str(e)}")
+		raise HTTPException(status_code=400, detail=str(e))
+
+@app.get("/dashboard/transactions/{business_uuid}")
+async def get_dashboard_transactions(business_uuid: str, limit: int = 10):
+	try:
+		logger.debug(f"Getting transaction monitoring for business: {business_uuid}")
+		transactions = await dashboard_metrics.get_transaction_monitoring(business_uuid, limit)
+		return transactions
+	except Exception as e:
+		logger.error(f"Failed to get transaction monitoring: {str(e)}")
 		raise HTTPException(status_code=400, detail=str(e))
 
 if __name__ == "__main__":
