@@ -77,6 +77,11 @@ This project is built with .
 - `GET /` - API root endpoint
 - `GET /health` - System health check
 
+### Transaction Tracking Endpoints
+- `GET /transactions/inbound` - Get inbound transactions for an address
+- `GET /transactions/outbound` - Get outbound transactions for an address
+- `GET /transactions/{transaction_id}` - Get detailed transaction information
+
 All endpoints return JSON responses and include proper error handling. For detailed API documentation, visit our [API Documentation](https://ripapay.netlify.app/api-docs).
 
 ## How can I deploy this project?

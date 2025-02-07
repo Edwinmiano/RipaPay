@@ -11,6 +11,7 @@ import asyncio
 from datetime import datetime
 from typing import Optional
 from utils.dashboard_metrics import DashboardMetricsService
+from utils.transaction_tracker import TransactionTracker
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -40,6 +41,7 @@ try:
 	transaction_builder = TransactionBuilder()
 	qr_generator = QRPaymentGenerator()
 	dashboard_metrics = DashboardMetricsService(qubic_client)
+	transaction_tracker = TransactionTracker(qubic_client)
 	logger.debug("Successfully initialized services")
 except Exception as e:
 	logger.error(f"Failed to initialize: {str(e)}")
@@ -129,6 +131,13 @@ class WalletTransactionRequest(BaseModel):
 	limit: Optional[int] = 10
 	offset: Optional[int] = 0
 
+class TransactionListRequest(BaseModel):
+	address: str
+	limit: Optional[int] = 10
+
+class TransactionDetailRequest(BaseModel):
+	transaction_id: str
+
 @app.post("/wallet/balance")
 async def get_wallet_balance(request: WalletBalanceRequest):
 	try:
@@ -177,6 +186,42 @@ async def get_dashboard_transactions(business_uuid: str, limit: int = 10):
 		return transactions
 	except Exception as e:
 		logger.error(f"Failed to get transaction monitoring: {str(e)}")
+		raise HTTPException(status_code=400, detail=str(e))
+
+@app.get("/transactions/inbound")
+async def get_inbound_transactions(request: TransactionListRequest):
+	try:
+		logger.debug(f"Getting inbound transactions for: {request.address}")
+		transactions = await transaction_tracker.get_inbound_transactions(
+			request.address,
+			request.limit
+		)
+		return transactions
+	except Exception as e:
+		logger.error(f"Failed to get inbound transactions: {str(e)}")
+		raise HTTPException(status_code=400, detail=str(e))
+
+@app.get("/transactions/outbound")
+async def get_outbound_transactions(request: TransactionListRequest):
+	try:
+		logger.debug(f"Getting outbound transactions for: {request.address}")
+		transactions = await transaction_tracker.get_outbound_transactions(
+			request.address,
+			request.limit
+		)
+		return transactions
+	except Exception as e:
+		logger.error(f"Failed to get outbound transactions: {str(e)}")
+		raise HTTPException(status_code=400, detail=str(e))
+
+@app.get("/transactions/{transaction_id}")
+async def get_transaction_details(transaction_id: str):
+	try:
+		logger.debug(f"Getting transaction details for: {transaction_id}")
+		details = await transaction_tracker.get_transaction_details(transaction_id)
+		return details
+	except Exception as e:
+		logger.error(f"Failed to get transaction details: {str(e)}")
 		raise HTTPException(status_code=400, detail=str(e))
 
 @app.post("/payment/link")
