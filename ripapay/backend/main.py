@@ -114,6 +114,49 @@ async def verify_qr_payment(qr_data: dict, payment_data: dict):
 		logger.error(f"QR payment verification failed: {str(e)}")
 		raise HTTPException(status_code=400, detail=str(e))
 
+@app.post("/wallet/connect")
+async def connect_wallet():
+	# TODO: Implement Qubic wallet connection logic here
+	return {"status": "success", "message": "Wallet connected (placeholder)"}
+
+class WalletBalanceRequest(BaseModel):
+	address: str
+
+class WalletTransactionRequest(BaseModel):
+	address: str
+	limit: Optional[int] = 10
+	offset: Optional[int] = 0
+
+@app.post("/wallet/balance")
+async def get_wallet_balance(request: WalletBalanceRequest):
+	try:
+		logger.debug(f"Getting balance for address: {request.address}")
+		# TODO: Implement actual balance fetching using QubiPy
+		balance = await qubic_client.get_balance(request.address)
+		return {"address": request.address, "balance": balance}
+	except Exception as e:
+		logger.error(f"Failed to get wallet balance: {str(e)}")
+		raise HTTPException(status_code=400, detail=str(e))
+
+@app.post("/wallet/transactions")
+async def get_wallet_transactions(request: WalletTransactionRequest):
+	try:
+		logger.debug(f"Getting transactions for address: {request.address}")
+		# TODO: Implement actual transaction history fetching using QubiPy
+		transactions = await qubic_client.get_transactions(
+			address=request.address,
+			limit=request.limit,
+			offset=request.offset
+		)
+		return {
+			"address": request.address,
+			"transactions": transactions,
+			"total": len(transactions)
+		}
+	except Exception as e:
+		logger.error(f"Failed to get wallet transactions: {str(e)}")
+		raise HTTPException(status_code=400, detail=str(e))
+
 if __name__ == "__main__":
 	import uvicorn
 	uvicorn.run(app, host="0.0.0.0", port=55003)

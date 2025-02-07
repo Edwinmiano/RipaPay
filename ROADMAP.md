@@ -26,9 +26,9 @@
 	- [x] Point-of-sale integration framework ✅
 
 ## Phase 2: Business Dashboard Core (Q2)
-- [ ] Wallet Integration 🚀
-	- [ ] Qubic wallet support 🚀
-	- [ ] Basic wallet connection features 🚀
+- [ ] Wallet Integration 🏗️
+	- [x] Qubic wallet support ✅
+	- [ ] Basic wallet connection features 🏗️
 - [ ] Dashboard Home Implementation 🚀
 	- [ ] Key metrics display 🚀
 	- [ ] Transaction monitoring system 🚀
