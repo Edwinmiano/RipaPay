@@ -21,6 +21,7 @@ from utils.account_manager import (
 	CloudIntegrationRequest
 )
 from utils.b2b_payment import B2BPaymentService
+from utils.uuid_generator import UUIDGenerator
 from typing import Optional, List
 
 # Configure logging
@@ -54,6 +55,7 @@ try:
 	transaction_tracker = TransactionTracker(qubic_client)
 	account_manager = AccountManager(qubic_client)
 	b2b_service = B2BPaymentService(qubic_client)
+	uuid_generator = UUIDGenerator()
 	logger.debug("Successfully initialized services")
 except Exception as e:
 	logger.error(f"Failed to initialize: {str(e)}")
@@ -81,6 +83,13 @@ class B2BTransferRequest(BaseModel):
 class ChainRegistrationRequest(BaseModel):
 	chain_name: str
 	chain_config: Dict[str, Any]
+
+class BusinessRegistrationRequest(BaseModel):
+	business_name: str
+	country: str
+	legal_entity_type: str
+	registration_number: str
+	industry_type: str
 
 @app.get("/")
 async def root():
@@ -388,6 +397,38 @@ async def register_chain(request: ChainRegistrationRequest):
 	except Exception as e:
 		logger.error(f"Chain registration failed: {str(e)}")
 		raise HTTPException(status_code=400, detail=str(e))
+
+@app.post("/business/register")
+async def register_business(request: BusinessRegistrationRequest):
+	try:
+		logger.debug(f"Registering business: {request.business_name}")
+		
+		# Generate business UUID
+		business_uuid = uuid_generator.generate_business_uuid(request.business_name)
+		
+		# Store business details (you'll need to implement proper storage)
+		business_data = {
+			"uuid": business_uuid,
+			"name": request.business_name,
+			"country": request.country,
+			"legal_entity_type": request.legal_entity_type,
+			"registration_number": request.registration_number,
+			"industry_type": request.industry_type,
+			"registration_date": datetime.utcnow().isoformat()
+		}
+		
+		return {
+			"status": "success",
+			"message": "Business registered successfully",
+			"business_uuid": business_uuid,
+			"data": business_data
+		}
+	except Exception as e:
+		logger.error(f"Failed to register business: {str(e)}")
+		raise HTTPException(
+			status_code=500,
+			detail=f"Business registration failed: {str(e)}"
+		)
 
 @app.post("/payment/link")
 async def generate_payment_link(payment: QRPaymentRequest):
