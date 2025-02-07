@@ -3,33 +3,33 @@ import re
 from typing import Optional, Dict
 import logging
 from datetime import datetime
+import random
 
 logger = logging.getLogger(__name__)
 
 class UUIDGenerator:
 	def __init__(self):
 		self._used_uuids = set()
-		self._business_prefix = "RPY"  # RipaPay prefix
 		
 	def generate_business_uuid(self, business_name: str) -> str:
-		"""Generate a unique business identifier similar to M-Pesa's Pay Bill"""
+		"""Generate a unique 8-digit business identifier"""
 		try:
-			# Create a base number from timestamp
+			# Create a base number from timestamp (last 6 digits)
 			timestamp = int(datetime.now().timestamp())
-			# Take last 6 digits
 			base_number = str(timestamp)[-6:]
 			
-			# Create a business-specific suffix (2 chars)
-			business_suffix = ''.join(c for c in business_name.upper()[:2] if c.isalnum())
+			# Add 2 random digits for uniqueness
+			random_suffix = str(random.randint(10, 99))
 			
-			# Combine to create a PayBill-like number
-			business_uuid = f"{self._business_prefix}{base_number}{business_suffix}"
+			# Combine to create an 8-digit number
+			business_uuid = f"{base_number}{random_suffix}"
 			
 			# Ensure uniqueness
 			while business_uuid in self._used_uuids:
 				timestamp = int(datetime.now().timestamp())
 				base_number = str(timestamp)[-6:]
-				business_uuid = f"{self._business_prefix}{base_number}{business_suffix}"
+				random_suffix = str(random.randint(10, 99))
+				business_uuid = f"{base_number}{random_suffix}"
 			
 			self._used_uuids.add(business_uuid)
 			return business_uuid
@@ -41,7 +41,7 @@ class UUIDGenerator:
 	def validate_business_uuid(self, business_uuid: str) -> bool:
 		"""Validate the format of a business UUID"""
 		try:
-			pattern = f"^{self._business_prefix}\\d{{6}}[A-Z0-9]{{2}}$"
+			pattern = r"^\d{8}$"  # Exactly 8 digits
 			return bool(re.match(pattern, business_uuid))
 		except Exception as e:
 			logger.error(f"Failed to validate business UUID: {str(e)}")
