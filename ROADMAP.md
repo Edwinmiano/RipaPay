@@ -32,9 +32,9 @@
 - [ ] Dashboard Home Implementation 🏗️
 	- [ ] Key metrics display 🏗️
 	- [ ] Transaction monitoring system 🏗️
-- [ ] Basic Payment Management 🚀
-	- [ ] QR code generation 🚀
-	- [ ] Payment link system 🚀
+- [ ] Basic Payment Management 🏗️
+	- [x] QR code generation ✅
+	- [x] Payment link system ✅
 - [ ] Transaction Tracking 🚀
 	- [ ] Inbound/outbound transaction display 🚀
 	- [ ] Basic transaction details 🚀

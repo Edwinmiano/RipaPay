@@ -179,6 +179,24 @@ async def get_dashboard_transactions(business_uuid: str, limit: int = 10):
 		logger.error(f"Failed to get transaction monitoring: {str(e)}")
 		raise HTTPException(status_code=400, detail=str(e))
 
+@app.post("/payment/link")
+async def generate_payment_link(payment: QRPaymentRequest):
+	try:
+		logger.debug(f"Generating payment link for: {payment}")
+		payment_data = {
+			"business_uuid": payment.business_uuid,
+			"amount": payment.amount,
+			"merchant_name": payment.merchant_name,
+			"reference": payment.reference,
+			"timestamp": datetime.utcnow().isoformat()
+		}
+		payment_link = qr_generator.generate_payment_link(payment_data)
+		logger.debug("Payment link generated successfully")
+		return {"payment_link": payment_link, "payment_data": payment_data}
+	except Exception as e:
+		logger.error(f"Payment link generation failed: {str(e)}")
+		raise HTTPException(status_code=400, detail=str(e))
+
 if __name__ == "__main__":
 	import uvicorn
 	uvicorn.run(app, host="0.0.0.0", port=55003)

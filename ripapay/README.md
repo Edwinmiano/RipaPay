@@ -56,5 +56,28 @@ This project is built with .
 - shadcn-ui
 - Tailwind CSS
 
+## API Endpoints
+
+### Wallet Endpoints
+- `POST /wallet/connect` - Connect to Qubic wallet
+- `POST /wallet/balance` - Get wallet balance
+- `POST /wallet/transactions` - Get wallet transaction history
+
+### Dashboard Endpoints
+- `GET /dashboard/metrics/{business_uuid}` - Get business dashboard metrics
+- `GET /dashboard/transactions/{business_uuid}` - Get business transaction monitoring
+
+### Payment Endpoints
+- `POST /transactions` - Create a new transaction
+- `POST /qr/generate` - Generate QR code for payment
+- `POST /qr/verify` - Verify QR payment data
+- `POST /payment/link` - Generate payment link
+
+### System Endpoints
+- `GET /` - API root endpoint
+- `GET /health` - System health check
+
+All endpoints return JSON responses and include proper error handling. For detailed API documentation, visit our [API Documentation](https://ripapay.netlify.app/api-docs).
+
 ## How can I deploy this project?
 

@@ -59,3 +59,27 @@ class QRPaymentGenerator:
 			)
 		except Exception as e:
 			raise Exception(f"Failed to verify QR payment: {str(e)}")
+
+	def generate_payment_link(self, payment_data: Dict[str, Any]) -> str:
+		"""
+		Generate a payment link that can be shared
+		Returns a URL-safe string containing payment information
+		"""
+		try:
+			# Format payment data
+			link_data = {
+				"business_uuid": payment_data["business_uuid"],
+				"amount": payment_data["amount"],
+				"reference": payment_data.get("reference", ""),
+				"merchant_name": payment_data.get("merchant_name", ""),
+				"timestamp": payment_data.get("timestamp", "")
+			}
+			
+			# Convert to URL-safe base64 string
+			json_str = json.dumps(link_data)
+			encoded_data = b64encode(json_str.encode()).decode().replace('+', '-').replace('/', '_')
+			
+			# Format as URL
+			return f"ripapay://pay/{encoded_data}"
+		except Exception as e:
+			raise Exception(f"Failed to generate payment link: {str(e)}")
