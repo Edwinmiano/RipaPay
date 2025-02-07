@@ -20,6 +20,8 @@ from utils.account_manager import (
 	AccountRestoreRequest,
 	CloudIntegrationRequest
 )
+from utils.b2b_payment import B2BPaymentService
+from typing import Optional, List
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -51,6 +53,7 @@ try:
 	dashboard_metrics = DashboardMetricsService(qubic_client)
 	transaction_tracker = TransactionTracker(qubic_client)
 	account_manager = AccountManager(qubic_client)
+	b2b_service = B2BPaymentService(qubic_client)
 	logger.debug("Successfully initialized services")
 except Exception as e:
 	logger.error(f"Failed to initialize: {str(e)}")
@@ -67,6 +70,17 @@ class QRPaymentRequest(BaseModel):
 	amount: float
 	merchant_name: Optional[str] = None
 	reference: Optional[str] = None
+
+class B2BTransferRequest(BaseModel):
+	from_business_id: str
+	to_business_id: str
+	amount: float
+	currency: str = "QUBIC"
+	memo: Optional[str] = None
+
+class ChainRegistrationRequest(BaseModel):
+	chain_name: str
+	chain_config: Dict[str, Any]
 
 @app.get("/")
 async def root():
@@ -329,6 +343,51 @@ async def integrate_with_cloud(request: CloudIntegrationRequest):
 			status_code=500,
 			detail=f"Cloud integration failed: {str(e)}"
 		)
+
+@app.post("/b2b/transfer")
+async def business_transfer(request: B2BTransferRequest):
+	try:
+		logger.debug(f"Processing B2B transfer: {request}")
+		result = await b2b_service.business_transfer(
+			from_business_id=request.from_business_id,
+			to_business_id=request.to_business_id,
+			amount=request.amount,
+			currency=request.currency,
+			memo=request.memo
+		)
+		return result
+	except Exception as e:
+		logger.error(f"B2B transfer failed: {str(e)}")
+		raise HTTPException(status_code=400, detail=str(e))
+
+@app.get("/b2b/supported-chains")
+async def get_supported_chains():
+	try:
+		chains = b2b_service.get_supported_chains()
+		return {"chains": chains}
+	except Exception as e:
+		logger.error(f"Failed to get supported chains: {str(e)}")
+		raise HTTPException(status_code=400, detail=str(e))
+
+@app.post("/b2b/register-chain")
+async def register_chain(request: ChainRegistrationRequest):
+	try:
+		success = await b2b_service.register_chain(
+			request.chain_name,
+			request.chain_config
+		)
+		if success:
+			return {
+				"status": "success",
+				"message": f"Chain {request.chain_name} registered successfully"
+			}
+		raise HTTPException(
+			status_code=400,
+			detail=f"Failed to register chain {request.chain_name}"
+		)
+	except Exception as e:
+		logger.error(f"Chain registration failed: {str(e)}")
+		raise HTTPException(status_code=400, detail=str(e))
 
 @app.post("/payment/link")
 async def generate_payment_link(payment: QRPaymentRequest):

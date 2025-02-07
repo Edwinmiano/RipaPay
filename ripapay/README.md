@@ -95,6 +95,11 @@ This project is built with .
 - `GET /transactions/outbound` - Get outbound transactions for an address
 - `GET /transactions/{transaction_id}` - Get detailed transaction information
 
+### B2B Payment Endpoints
+- `POST /b2b/transfer` - Execute business-to-business transfer
+- `GET /b2b/supported-chains` - Get list of supported blockchain networks
+- `POST /b2b/register-chain` - Register new blockchain network for B2B transfers
+
 All endpoints return JSON responses and include proper error handling. For detailed API documentation, visit our [API Documentation](https://ripapay.netlify.app/api-docs).
 
 ## How can I deploy this project?
