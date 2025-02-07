@@ -77,6 +77,13 @@ This project is built with .
 - `GET /` - API root endpoint
 - `GET /health` - System health check
 
+### Account Management Endpoints
+- `POST /accounts/create` - Create a new account with mnemonic
+- `GET /accounts/{address}` - Get account details
+- `POST /accounts/backup` - Backup account data
+- `POST /accounts/restore` - Restore account from backup
+- `POST /accounts/cloud-integration` - Integrate account with cloud storage
+
 ### Transaction Tracking Endpoints
 - `GET /transactions/inbound` - Get inbound transactions for an address
 - `GET /transactions/outbound` - Get outbound transactions for an address

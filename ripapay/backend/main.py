@@ -12,6 +12,14 @@ from datetime import datetime
 from typing import Optional
 from utils.dashboard_metrics import DashboardMetricsService
 from utils.transaction_tracker import TransactionTracker
+from utils.account_manager import (
+	AccountManager,
+	AccountCreationRequest,
+	AccountDetailsRequest,
+	AccountBackupRequest,
+	AccountRestoreRequest,
+	CloudIntegrationRequest
+)
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -42,6 +50,7 @@ try:
 	qr_generator = QRPaymentGenerator()
 	dashboard_metrics = DashboardMetricsService(qubic_client)
 	transaction_tracker = TransactionTracker(qubic_client)
+	account_manager = AccountManager(qubic_client)
 	logger.debug("Successfully initialized services")
 except Exception as e:
 	logger.error(f"Failed to initialize: {str(e)}")
@@ -222,6 +231,63 @@ async def get_transaction_details(transaction_id: str):
 		return details
 	except Exception as e:
 		logger.error(f"Failed to get transaction details: {str(e)}")
+		raise HTTPException(status_code=400, detail=str(e))
+
+@app.post("/accounts/create")
+async def create_account(request: AccountCreationRequest):
+	try:
+		logger.debug("Creating new account")
+		account = await account_manager.create_account(request.mnemonic)
+		return account
+	except Exception as e:
+		logger.error(f"Failed to create account: {str(e)}")
+		raise HTTPException(status_code=400, detail=str(e))
+
+@app.get("/accounts/{address}")
+async def get_account_details(address: str):
+	try:
+		logger.debug(f"Getting account details for: {address}")
+		details = await account_manager.get_account_details(address)
+		return details
+	except Exception as e:
+		logger.error(f"Failed to get account details: {str(e)}")
+		raise HTTPException(status_code=400, detail=str(e))
+
+@app.post("/accounts/backup")
+async def backup_account(request: AccountBackupRequest):
+	try:
+		logger.debug(f"Backing up account: {request.address}")
+		success = await account_manager.backup_account(
+			request.address,
+			request.backup_path
+		)
+		return {"success": success}
+	except Exception as e:
+		logger.error(f"Failed to backup account: {str(e)}")
+		raise HTTPException(status_code=400, detail=str(e))
+
+@app.post("/accounts/restore")
+async def restore_account(request: AccountRestoreRequest):
+	try:
+		logger.debug("Restoring account from backup")
+		account = await account_manager.restore_account(request.backup_path)
+		return account
+	except Exception as e:
+		logger.error(f"Failed to restore account: {str(e)}")
+		raise HTTPException(status_code=400, detail=str(e))
+
+@app.post("/accounts/cloud-integration")
+async def integrate_with_cloud(request: CloudIntegrationRequest):
+	try:
+		logger.debug(f"Integrating account with cloud provider: {request.cloud_provider}")
+		success = await account_manager.cloud_integration(
+			request.address,
+			request.cloud_provider,
+			request.credentials
+		)
+		return {"success": success}
+	except Exception as e:
+		logger.error(f"Failed to integrate with cloud provider: {str(e)}")
 		raise HTTPException(status_code=400, detail=str(e))
 
 @app.post("/payment/link")
