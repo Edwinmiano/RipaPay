@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 import logging
 import asyncio
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Dict, Any
 from utils.dashboard_metrics import DashboardMetricsService
 from utils.transaction_tracker import TransactionTracker
 from utils.account_manager import (
@@ -257,38 +257,78 @@ async def get_account_details(address: str):
 async def backup_account(request: AccountBackupRequest):
 	try:
 		logger.debug(f"Backing up account: {request.address}")
-		success = await account_manager.backup_account(
+		backup_result = await account_manager.backup_account(
 			request.address,
 			request.backup_path
 		)
-		return {"success": success}
+		
+		return {
+			"status": "success",
+			"message": "Account backup completed",
+			"backup_details": backup_result,
+			"timestamp": datetime.utcnow().isoformat()
+		}
 	except Exception as e:
 		logger.error(f"Failed to backup account: {str(e)}")
-		raise HTTPException(status_code=400, detail=str(e))
+		raise HTTPException(
+			status_code=500,
+			detail=f"Backup failed: {str(e)}"
+		)
 
 @app.post("/accounts/restore")
 async def restore_account(request: AccountRestoreRequest):
 	try:
 		logger.debug("Restoring account from backup")
 		account = await account_manager.restore_account(request.backup_path)
-		return account
+		
+		return {
+			"status": "success",
+			"message": "Account restored successfully",
+			"account_data": account,
+			"timestamp": datetime.utcnow().isoformat()
+		}
 	except Exception as e:
 		logger.error(f"Failed to restore account: {str(e)}")
-		raise HTTPException(status_code=400, detail=str(e))
+		raise HTTPException(
+			status_code=500,
+			detail=f"Restore failed: {str(e)}"
+		)
 
 @app.post("/accounts/cloud-integration")
 async def integrate_with_cloud(request: CloudIntegrationRequest):
 	try:
 		logger.debug(f"Integrating account with cloud provider: {request.cloud_provider}")
+		if request.cloud_provider.lower() != "google_drive":
+			raise HTTPException(
+				status_code=400,
+				detail="Currently only Google Drive is supported as a cloud provider"
+			)
+		
 		success = await account_manager.cloud_integration(
 			request.address,
 			request.cloud_provider,
 			request.credentials
 		)
-		return {"success": success}
+		
+		if success:
+			return {
+				"status": "success",
+				"message": "Successfully integrated with Google Drive",
+				"provider": request.cloud_provider,
+				"address": request.address,
+				"timestamp": datetime.utcnow().isoformat()
+			}
+		else:
+			raise HTTPException(
+				status_code=400,
+				detail="Failed to integrate with Google Drive"
+			)
 	except Exception as e:
 		logger.error(f"Failed to integrate with cloud provider: {str(e)}")
-		raise HTTPException(status_code=400, detail=str(e))
+		raise HTTPException(
+			status_code=500,
+			detail=f"Cloud integration failed: {str(e)}"
+		)
 
 @app.post("/payment/link")
 async def generate_payment_link(payment: QRPaymentRequest):
