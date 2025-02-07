@@ -13,6 +13,10 @@
 	- [x] About page ✅
 	- [x] Business registration flow ✅
 	- [x] UUID generation system ✅
+		- 8-digit numeric format
+		- Timestamp-based generation
+		- Uniqueness validation
+		- API endpoint integration
 - [x] Core Service Layer Implementation 
 	- [x] Network connectivity service 
 	- [x] Wallet integration service 

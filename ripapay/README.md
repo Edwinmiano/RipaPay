@@ -58,11 +58,21 @@ This project is built with .
 
 ## API Endpoints
 
+### Business Registration Endpoints
+- `POST /business/register` - Register a new business and receive an 8-digit business UUID
+- `GET /business/{uuid}` - Get business details by UUID (8-digit format)
+
 ### Analytics & Reporting Endpoints
-- `GET /analytics/transactions/{business_uuid}` - Get comprehensive transaction analytics
+- `GET /analytics/transactions/{business_uuid}` - Get comprehensive transaction analytics (8-digit UUID)
 - `POST /analytics/export` - Export transaction data in CSV or JSON format
-- `GET /analytics/customer-insights/{business_uuid}` - Get customer behavior analytics
-- `GET /analytics/growth-metrics/{business_uuid}` - Get business growth analytics
+- `GET /analytics/customer-insights/{business_uuid}` - Get customer behavior analytics (8-digit UUID)
+- `GET /analytics/growth-metrics/{business_uuid}` - Get business growth analytics (8-digit UUID)
+
+### UUID Format
+All business UUIDs in the system follow an 8-digit numeric format:
+- Example: 16789045
+- First 6 digits: Timestamp-based
+- Last 2 digits: Random for uniqueness
 
 ### Wallet Endpoints
 - `POST /wallet/connect` - Connect to Qubic wallet

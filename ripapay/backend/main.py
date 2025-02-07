@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
+import re
 from qubipy.rpc.rpc_client import QubiPy_RPC
 from utils.transaction_builder import TransactionBuilder
 from utils.qr_payment import QRPaymentGenerator
@@ -67,11 +68,23 @@ class TransactionRequest(BaseModel):
 	amount: float
 	business_uuid: str
 
+	@validator('business_uuid')
+	def validate_business_uuid(cls, v):
+		if not re.match(r'^\d{8}$', v):
+			raise ValueError('Business UUID must be an 8-digit number')
+		return v
+
 class QRPaymentRequest(BaseModel):
 	business_uuid: str
 	amount: float
 	merchant_name: Optional[str] = None
 	reference: Optional[str] = None
+
+	@validator('business_uuid')
+	def validate_business_uuid(cls, v):
+		if not re.match(r'^\d{8}$', v):
+			raise ValueError('Business UUID must be an 8-digit number')
+		return v
 
 class B2BTransferRequest(BaseModel):
 	from_business_id: str
@@ -79,6 +92,12 @@ class B2BTransferRequest(BaseModel):
 	amount: float
 	currency: str = "QUBIC"
 	memo: Optional[str] = None
+
+	@validator('from_business_id', 'to_business_id')
+	def validate_business_ids(cls, v):
+		if not re.match(r'^\d{8}$', v):
+			raise ValueError('Business ID must be an 8-digit number')
+		return v
 
 class ChainRegistrationRequest(BaseModel):
 	chain_name: str
