@@ -58,6 +58,12 @@ This project is built with .
 
 ## API Endpoints
 
+### Analytics & Reporting Endpoints
+- `GET /analytics/transactions/{business_uuid}` - Get comprehensive transaction analytics
+- `POST /analytics/export` - Export transaction data in CSV or JSON format
+- `GET /analytics/customer-insights/{business_uuid}` - Get customer behavior analytics
+- `GET /analytics/growth-metrics/{business_uuid}` - Get business growth analytics
+
 ### Wallet Endpoints
 - `POST /wallet/connect` - Connect to Qubic wallet
 - `POST /wallet/balance` - Get wallet balance
@@ -82,7 +88,7 @@ This project is built with .
 - `GET /accounts/{address}` - Get account details
 - `POST /accounts/backup` - Backup account data
 - `POST /accounts/restore` - Restore account from backup
-- `POST /accounts/cloud-integration` - Integrate account with cloud storage
+- `POST /accounts/cloud-integration` - Integrate account with cloud storage (Google Drive)
 
 ### Transaction Tracking Endpoints
 - `GET /transactions/inbound` - Get inbound transactions for an address
